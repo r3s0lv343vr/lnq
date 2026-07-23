@@ -65,6 +65,10 @@ LNQ_WEBHOOK_SECRET=          # optional bearer for webhook auth
 | `npm run test` | Vitest unit tests |
 | `npm run lint` | ESLint |
 
+## Deploy
+
+See [DEPLOY.md](./DEPLOY.md) for Vercel + Firebase production and the Hult PR helper.
+
 ## Stack
 
 - Next.js 15 · React 19 · TypeScript
