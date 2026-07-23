@@ -8,6 +8,17 @@ Cohort programs need clarity without the noise of real-time chat. Lnq organizes 
 
 **Design**: editorial terminal aesthetic — deep ink, phosphor teal, warm paper. Signal clarity over decoration.
 
+## Production
+
+| | |
+|---|---|
+| **URL** | https://lnq-eight.vercel.app |
+| **Health** | https://lnq-eight.vercel.app/api/health |
+| **Demo email** | `demo@lnq.test` |
+| **Demo password** | `demo123` |
+
+On the landing page you can also click **Explore demo** (same account, admin role). Demo data persists in browser `localStorage`.
+
 ## Quick start
 
 ```bash
@@ -16,11 +27,11 @@ cp .env.example .env.local   # optional — see below
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) locally, or use production: [https://lnq-eight.vercel.app](https://lnq-eight.vercel.app).
+Open [http://localhost:3000](http://localhost:3000).
 
 ### Demo mode (no Firebase)
 
-Click **Explore demo** on the landing page. Data persists in `localStorage` across refreshes. Default login: `demo@lnq.test` / `demo123` (admin role).
+Use the credentials above, or click **Explore demo**. Data persists in `localStorage` across refreshes.
 
 ### Production mode (Firebase)
 
