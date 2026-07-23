@@ -80,3 +80,4 @@ See [AGENTS.md](./AGENTS.md) for the full agent contract and architecture map.
 ## License
 
 Private — cohort internal use.
+
