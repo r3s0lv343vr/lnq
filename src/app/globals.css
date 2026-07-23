@@ -1,0 +1,301 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #0b1f24;
+  --teal: #1fa6a0;
+  --teal-dim: #178f8a;
+  --paper: #f3efe6;
+  --charcoal: #2a2f33;
+  --muted: #5c6569;
+  --border: rgba(11, 31, 36, 0.12);
+  --surface: rgba(243, 239, 230, 0.92);
+  --surface-elevated: #faf8f4;
+  --background: var(--paper);
+  --foreground: var(--charcoal);
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-teal: var(--teal);
+  --color-teal-dim: var(--teal-dim);
+  --color-paper: var(--paper);
+  --color-charcoal: var(--charcoal);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-display: var(--font-fraunces);
+  --font-serif: var(--font-source-serif);
+  --font-mono: var(--font-ibm-plex-mono);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--charcoal);
+  font-family: var(--font-source-serif), Georgia, "Times New Roman", serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Atmospheric grid + noise for landing */
+.lnq-atmosphere {
+  position: relative;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(31, 166, 160, 0.18), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(11, 31, 36, 0.35), transparent 55%),
+    linear-gradient(165deg, var(--ink) 0%, #0e2830 45%, var(--ink) 100%);
+}
+
+.lnq-atmosphere::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(31, 166, 160, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(31, 166, 160, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 90% 80% at 50% 40%, black 20%, transparent 75%);
+  pointer-events: none;
+}
+
+.lnq-atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* Zulip-style app layout */
+.lnq-shell {
+  display: grid;
+  grid-template-columns: var(--rail-width, 220px) var(--topic-width, 240px) 1fr;
+  grid-template-rows: auto 1fr;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.lnq-shell--dm {
+  grid-template-columns: var(--rail-width, 220px) 1fr;
+}
+
+@media (max-width: 767px) {
+  .lnq-shell--mobile-rail-hidden {
+    --rail-width: 0px;
+  }
+
+  .lnq-shell--mobile-rail-hidden .lnq-rail {
+    display: none;
+  }
+
+  .lnq-shell--mobile-topic-hidden {
+    --topic-width: 0px;
+  }
+
+  .lnq-shell--mobile-topic-hidden .lnq-topic-col {
+    display: none;
+  }
+
+  .lnq-rail,
+  .lnq-topic-col {
+    position: absolute;
+    top: 52px;
+    bottom: 0;
+    z-index: 15;
+    width: 220px;
+    box-shadow: 2px 0 12px rgba(11, 31, 36, 0.15);
+  }
+
+  .lnq-topic-col {
+    left: 0;
+  }
+}
+
+.lnq-header {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-elevated);
+  min-height: 52px;
+}
+
+.lnq-rail {
+  border-right: 1px solid var(--border);
+  background: var(--ink);
+  color: var(--paper);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.lnq-topic-col {
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  overflow-y: auto;
+}
+
+.lnq-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--paper);
+}
+
+/* Motion */
+@keyframes lnq-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lnq-message-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lnq-animate-landing {
+  animation: lnq-fade-in 0.6s ease-out both;
+}
+
+.lnq-stream-selected {
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.lnq-message-item {
+  animation: lnq-message-in 0.25s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lnq-animate-landing,
+  .lnq-message-item {
+    animation: none;
+  }
+
+  .lnq-stream-selected {
+    transition: none;
+  }
+}
+
+/* Utility classes */
+.font-display {
+  font-family: var(--font-fraunces), Georgia, serif;
+}
+
+.font-mono-meta {
+  font-family: var(--font-ibm-plex-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+}
+
+.lnq-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 4px;
+  font-family: var(--font-ibm-plex-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+.lnq-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lnq-btn-primary {
+  background: var(--teal);
+  color: var(--ink);
+}
+
+.lnq-btn-primary:hover:not(:disabled) {
+  background: var(--teal-dim);
+}
+
+.lnq-btn-ghost {
+  background: transparent;
+  color: var(--paper);
+  border: 1px solid rgba(243, 239, 230, 0.35);
+}
+
+.lnq-btn-ghost:hover:not(:disabled) {
+  background: rgba(243, 239, 230, 0.08);
+}
+
+.lnq-btn-outline {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--border);
+}
+
+.lnq-btn-outline:hover:not(:disabled) {
+  background: rgba(11, 31, 36, 0.04);
+}
+
+.lnq-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface-elevated);
+  color: var(--charcoal);
+  font-family: var(--font-source-serif), Georgia, serif;
+  font-size: 0.9375rem;
+}
+
+.lnq-input:focus {
+  outline: 2px solid var(--teal);
+  outline-offset: 1px;
+}
+
+.lnq-unfurl {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-left: 2px solid var(--teal);
+  background: rgba(31, 166, 160, 0.06);
+  border-radius: 0 4px 4px 0;
+  font-size: 0.875rem;
+}
+
+.lnq-unfurl a {
+  color: var(--teal-dim);
+  text-decoration: none;
+}
+
+.lnq-unfurl a:hover {
+  text-decoration: underline;
+}

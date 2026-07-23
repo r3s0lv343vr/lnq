@@ -1,0 +1,55 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    function profile() {
+      return get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data;
+    }
+
+    function isAdminOrOperator() {
+      return isAuth() && profile().role in ['admin', 'operator'];
+    }
+
+    function streamData(streamId) {
+      return get(/databases/$(database)/documents/streams/$(streamId)).data;
+    }
+
+    match /profiles/{userId} {
+      allow read: if isAuth();
+      allow write: if isAuth() && request.auth.uid == userId;
+    }
+
+    match /streams/{streamId} {
+      allow read: if isAuth();
+      allow create, update: if isAuth();
+      allow delete: if false;
+
+      match /messages/{messageId} {
+        allow read: if isAuth();
+        allow create: if isAuth()
+          && (!streamData(streamId).announcementsOnly || isAdminOrOperator());
+        allow update, delete: if isAuth() && request.auth.uid == resource.data.authorId;
+      }
+    }
+
+    match /dms/{dmId} {
+      allow read: if isAuth() && request.auth.uid in resource.data.memberIds;
+      allow create: if isAuth() && request.auth.uid in request.resource.data.memberIds;
+      allow update: if isAuth() && request.auth.uid in resource.data.memberIds;
+
+      match /messages/{messageId} {
+        allow read, create: if isAuth()
+          && request.auth.uid in get(/databases/$(database)/documents/dms/$(dmId)).data.memberIds;
+        allow update, delete: if isAuth() && request.auth.uid == resource.data.authorId;
+      }
+    }
+
+    match /notifications/{userId}/items/{notificationId} {
+      allow read, write: if isAuth() && request.auth.uid == userId;
+    }
+  }
+}
