@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useSession } from '@/lib/session';
 import { FORTH_PRODUCTION_URL } from '@/lib/identity';
+import { DEMO_ACCOUNT } from '@/lib/store/demo-store';
 
 export function AuthPanel() {
   const {
@@ -16,11 +17,23 @@ export function AuthPanel() {
   } = useSession();
 
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState(DEMO_ACCOUNT.email);
+  const [password, setPassword] = useState(DEMO_ACCOUNT.password);
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const handleExploreDemo = async () => {
+    setError('');
+    setSubmitting(true);
+    try {
+      await exploreDemo();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not start demo.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +84,7 @@ export function AuthPanel() {
           </button>
         </div>
 
-        <p className="text-sm text-muted mb-4 leading-relaxed">
+        <p className="text-sm text-muted mb-3 leading-relaxed">
           Use the same email as your{' '}
           <a
             href={FORTH_PRODUCTION_URL}
@@ -83,6 +96,15 @@ export function AuthPanel() {
           </a>{' '}
           account (Google or GitHub) so identity stays aligned across platforms.
         </p>
+
+        {!hasFirebase && (
+          <p className="text-sm mb-4 rounded border border-border bg-paper/60 px-3 py-2 text-charcoal">
+            Demo login:{' '}
+            <span className="font-mono-meta text-teal-dim">{DEMO_ACCOUNT.email}</span>
+            {' / '}
+            <span className="font-mono-meta text-teal-dim">{DEMO_ACCOUNT.password}</span>
+          </p>
+        )}
 
         {hasFirebase && (
           <div className="flex gap-2 mb-4">
@@ -121,7 +143,9 @@ export function AuthPanel() {
             <label className="font-mono-meta text-muted block mb-1">Email</label>
             <input
               className="lnq-input"
-              type="email"
+              type="text"
+              inputMode="email"
+              autoComplete="username"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -162,7 +186,8 @@ export function AuthPanel() {
           <button
             type="button"
             className="text-muted hover:text-charcoal"
-            onClick={() => exploreDemo()}
+            disabled={submitting}
+            onClick={() => void handleExploreDemo()}
           >
             Or explore the demo without signing up
           </button>

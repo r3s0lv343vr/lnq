@@ -58,7 +58,7 @@ Zulip-style shell: streams → topics → messages + DMs / search / notification
                     └── Forth integration APIs + deep links
 ```
 
-Demo login (admin): `demo@lnq.local` / `demo123`
+Demo login (admin): `demo@lnq.test` / `demo123`
 
 ## Setup (fresh clone)
 

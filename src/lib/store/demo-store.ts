@@ -22,6 +22,14 @@ import type {
 const STORAGE_KEY = 'lnq-demo-v1';
 const POLL_INTERVAL_MS = 500;
 
+/** Known demo account — use these on Sign in or Explore demo. */
+export const DEMO_ACCOUNT = {
+  email: 'demo@lnq.test',
+  password: 'demo123',
+  displayName: 'Demo User',
+  role: 'admin' as UserRole,
+};
+
 type Listener = () => void;
 
 interface DemoUserRecord extends UserProfile {
@@ -199,11 +207,20 @@ export class DemoStore {
 
   signIn(email: string, password: string): UserProfile {
     const normalized = normalizeEmail(email);
+
+    // Auto-provision the known demo account so Sign in works without Explore first.
+    if (
+      emailsMatch(normalized, DEMO_ACCOUNT.email) &&
+      password === DEMO_ACCOUNT.password
+    ) {
+      return this.ensureDemoAccount();
+    }
+
     const user = Object.values(this.state.users).find((candidate) =>
       emailsMatch(candidate.email, normalized),
     );
 
-    if (!user || !verifyPasswordDemo(password, user.passwordHash)) {
+    if (!user || !user.passwordHash || !verifyPasswordDemo(password, user.passwordHash)) {
       throw new Error('Invalid email or password.');
     }
 
@@ -218,23 +235,73 @@ export class DemoStore {
     this.persist();
   }
 
+  /** Upsert the known demo admin and sign them in. Always resets the demo password. */
+  ensureDemoAccount(): UserProfile {
+    const email = normalizeEmail(DEMO_ACCOUNT.email);
+    const existing = Object.values(this.state.users).find((candidate) =>
+      emailsMatch(candidate.email, email),
+    );
+
+    if (existing) {
+      existing.passwordHash = hashPasswordDemo(DEMO_ACCOUNT.password);
+      existing.role = DEMO_ACCOUNT.role;
+      existing.displayName = DEMO_ACCOUNT.displayName;
+      this.state.sessionUid = existing.uid;
+      this.persist();
+      return this.toProfile(existing);
+    }
+
+    return this.signUp({
+      email: DEMO_ACCOUNT.email,
+      password: DEMO_ACCOUNT.password,
+      displayName: DEMO_ACCOUNT.displayName,
+      role: DEMO_ACCOUNT.role,
+    });
+  }
+
   ensureSeedData(): void {
-    if (Object.keys(this.state.streams).length > 0) return;
+    let changed = false;
 
-    const createdAt = new Date().toISOString();
-    for (const stream of getDefaultStreams()) {
-      this.state.streams[stream.id] = { ...stream, createdAt };
-    }
-
-    for (const message of getAllSeedMessages(createdAt)) {
-      if (!message.streamId) continue;
-      if (!this.state.streamMessages[message.streamId]) {
-        this.state.streamMessages[message.streamId] = {};
+    if (Object.keys(this.state.streams).length === 0) {
+      const createdAt = new Date().toISOString();
+      for (const stream of getDefaultStreams()) {
+        this.state.streams[stream.id] = { ...stream, createdAt };
       }
-      this.state.streamMessages[message.streamId][message.id] = message;
+
+      for (const message of getAllSeedMessages(createdAt)) {
+        if (!message.streamId) continue;
+        if (!this.state.streamMessages[message.streamId]) {
+          this.state.streamMessages[message.streamId] = {};
+        }
+        this.state.streamMessages[message.streamId][message.id] = message;
+      }
+      changed = true;
     }
 
-    this.persist();
+    // Always ensure the demo admin exists (does not switch session unless signing in).
+    const email = normalizeEmail(DEMO_ACCOUNT.email);
+    const demoUser = Object.values(this.state.users).find((candidate) =>
+      emailsMatch(candidate.email, email),
+    );
+    if (!demoUser) {
+      const uid = createId('user');
+      this.state.users[uid] = {
+        uid,
+        email,
+        displayName: DEMO_ACCOUNT.displayName,
+        role: DEMO_ACCOUNT.role,
+        photoURL: null,
+        createdAt: new Date().toISOString(),
+        passwordHash: hashPasswordDemo(DEMO_ACCOUNT.password),
+      };
+      changed = true;
+    } else if (!demoUser.passwordHash) {
+      demoUser.passwordHash = hashPasswordDemo(DEMO_ACCOUNT.password);
+      demoUser.role = DEMO_ACCOUNT.role;
+      changed = true;
+    }
+
+    if (changed) this.persist();
   }
 
   listStreams(includeArchived = false): Stream[] {

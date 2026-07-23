@@ -1,9 +1,25 @@
 'use client';
 
+import { useState } from 'react';
 import { useSession } from '@/lib/session';
+import { DEMO_ACCOUNT } from '@/lib/store/demo-store';
 
 export function Landing() {
   const { setShowAuth, exploreDemo } = useSession();
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  const handleExplore = async () => {
+    setError('');
+    setBusy(true);
+    try {
+      await exploreDemo();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not start demo.');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <div className="lnq-atmosphere relative min-h-dvh flex flex-col items-center justify-center px-6 py-16">
@@ -31,11 +47,17 @@ export function Landing() {
           <button
             type="button"
             className="lnq-btn lnq-btn-ghost min-w-[160px]"
-            onClick={() => exploreDemo()}
+            disabled={busy}
+            onClick={() => void handleExplore()}
           >
             Explore demo
           </button>
         </div>
+
+        <p className="mt-6 font-mono-meta text-paper/70 text-xs">
+          Demo: {DEMO_ACCOUNT.email} / {DEMO_ACCOUNT.password}
+        </p>
+        {error && <p className="mt-3 text-sm text-red-200">{error}</p>}
       </div>
     </div>
   );

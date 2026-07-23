@@ -17,7 +17,7 @@ import {
   signInWithPopup,
   signOut as firebaseSignOut,
 } from 'firebase/auth';
-import { demoStore } from '@/lib/store/demo-store';
+import { DEMO_ACCOUNT, demoStore } from '@/lib/store/demo-store';
 import { getFirebaseServices, hasFirebaseConfig } from '@/lib/firebase/config';
 import {
   archiveStream as firebaseArchiveStream,
@@ -87,9 +87,6 @@ interface SessionContextValue {
 }
 
 const SessionContext = createContext<SessionContextValue | null>(null);
-
-const DEMO_EMAIL = 'demo@lnq.local';
-const DEMO_PASSWORD = 'demo123';
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -268,18 +265,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const exploreDemo = async () => {
     demoStore.ensureSeedData();
-    const existing = demoStore.getUserByEmail(DEMO_EMAIL);
-    if (!existing) {
-      demoStore.signUp({
-        email: DEMO_EMAIL,
-        password: DEMO_PASSWORD,
-        displayName: 'Demo User',
-        role: 'admin',
-      });
-    } else {
-      demoStore.signIn(DEMO_EMAIL, DEMO_PASSWORD);
-    }
-    demoStore.ensureSeedData();
+    demoStore.ensureDemoAccount();
     setMode('demo');
     localStorage.setItem('lnq-auth-mode', 'demo');
     refreshDemoUser();

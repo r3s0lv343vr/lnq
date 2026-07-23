@@ -9,7 +9,7 @@
 
 ## Demo without Firebase
 
-Open the site and click **Explore demo** (`demo@lnq.local` / `demo123`).
+Open the site and click **Explore demo** (`demo@lnq.test` / `demo123`).
 
 ## Hult submission PR
 

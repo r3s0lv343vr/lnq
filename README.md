@@ -20,7 +20,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### Demo mode (no Firebase)
 
-Click **Explore demo** on the landing page. Data persists in `localStorage` across refreshes. Default login: `demo@lnq.local` / `demo123` (admin role).
+Click **Explore demo** on the landing page. Data persists in `localStorage` across refreshes. Default login: `demo@lnq.test` / `demo123` (admin role).
 
 ### Production mode (Firebase)
 
