@@ -16,7 +16,7 @@ cp .env.example .env.local   # optional — see below
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) locally, or use production: [https://lnq-eight.vercel.app](https://lnq-eight.vercel.app).
 
 ### Demo mode (no Firebase)
 

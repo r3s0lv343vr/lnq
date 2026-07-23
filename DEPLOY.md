@@ -11,6 +11,8 @@
 
 Open the site and click **Explore demo** (`demo@lnq.test` / `demo123`).
 
+Production: https://lnq-eight.vercel.app
+
 ## Hult submission PR
 
 ```bash

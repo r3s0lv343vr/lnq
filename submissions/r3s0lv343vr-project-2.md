@@ -4,13 +4,12 @@
 
 ## Production URL
 
-- **Build repo:** https://github.com/r3s0lv343vr/lnq (`main`)
-- **Vercel target:** import `r3s0lv343vr/lnq` → set `NEXT_PUBLIC_FIREBASE_*` from `.env.example` → deploy (intended production host `lnq.vercel.app` / project alias)
-- **Live smoke (agent session tunnel):** https://handed-theories-wolf-bull.trycloudflare.com — `GET /api/health` → `{"ok":true,"app":"lnq"}`
-- **Product PR:** https://github.com/r3s0lv343vr/lnq/pull/1
-- **Formal Hult PR helper:** `bash scripts/open-hult-pr.sh` (needs push access to the participant fork)
+**https://lnq-eight.vercel.app**
 
-Health: `GET /api/health` → `{"ok":true,"app":"lnq"}`
+- Build repo: https://github.com/r3s0lv343vr/lnq (`main`)
+- Health: `GET /api/health` → `{"ok":true,"app":"lnq"}`
+- Demo: **Explore demo**, or sign in with `demo@lnq.test` / `demo123`
+- Formal Hult PR helper: `bash scripts/open-hult-pr.sh` (needs push access to the participant fork)
 
 ## Product summary
 
